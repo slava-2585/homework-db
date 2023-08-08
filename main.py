@@ -52,21 +52,15 @@ def add_telephone(cursor, first_name, last_name, number): #Функция, по�
         """, (id_cl[0], number))
     print('Данные добавлены')
     
-def edit_client(cursor, first_name, last_name, email): #Функция, позволяющая изменить данные о клиенте (email).
-    cursor.execute("""
-    SELECT id
-    FROM client
-    WHERE first_name = %s and last_name = %s                  
-    """, (first_name, last_name))
-    id_cl = cursor.fetchone()
-    if id_cl != None:
-        cursor.execute("""
-        UPDATE client
-        SET email = %s
-        WHERE id = %s                
-        """, (email, id_cl[0]))
-    else:
-        print('Клиент не найден')
+def edit_client(cursor, id, **data): #Функция, позволяющая изменить данные о клиенте (email).
+    edit_string = """UPDATE client
+    SET """
+    for key, value in data.items():
+        edit_string += f"{key}='{value}', "
+    edit_string = edit_string[:-2]
+    edit_string += " WHERE id = %s"
+    print(edit_string)
+    cursor.execute(edit_string, (id, ))
     
 def del_tel(cursor, first_name, last_name, *number): #Функция, позволяющая удалить телефон для существующего клиента (если передан номер, удаляет его, иначе все).
     cursor.execute("""
@@ -104,18 +98,19 @@ def find_client(cursor, **data): #Функция, позволяющая най�
         find_string += f"{key}='{value}' and "
     find_string = find_string[:-4]
     print (find_string)
-    # cursor.execute()
-    # for i in cursor.fetchall():
-    #     print(' '.join(i))
+    cursor.execute(find_string)
+    print('Результат поиска:')
+    for i in cursor.fetchall():
+         print(' '.join(i))
        
 if __name__ == "__main__":
     #Create_table(cur)
     #add_client(cur, '12300', '45600', '898@', '89523506410')
     #add_telephone(cur, '12300', '45600', '891100000')
-    #edit_client(cur, '123000', '45600', '1@1')
+    #edit_client(cur, '10', first_name='Ivan7', last_name='Ivanov7')
     #del_tel(cur, '12300', '45600')
     #del_client(cur, '12300', '45600')
-    find_client(cur, first_name='Ivan', last_name='Ivanov')
+    #find_client(cur, first_name='Ivan', last_name='Ivanov')
 
 if conn:
     cur.close()
