@@ -96,25 +96,26 @@ def del_client(cursor, first_name, last_name): #Функция, позволяю
         """, (first_name, last_name))
     print('Клиент удален')
     
-def find_client(cursor, first_name, last_name): #Функция, позволяющая найти клиента по его данным: имени, фамилии, email или телефону.
-    cursor.execute("""
-    SELECT c.first_name, c.last_name, c.email, t.number
-    FROM client c
-    LEFT JOIN telephone t ON t.id_client = c.id
-    WHERE first_name = %s and last_name = %s                  
-    """, (first_name, last_name))
-    #print(cursor.fetchall())
-    for i in cursor.fetchall():
-        print(' '.join(i))
+def find_client(cursor, **data): #Функция, позволяющая найти клиента по его данным: имени, фамилии, email или телефону.
+    find_string = """SELECT c.first_name, c.last_name, c.email, t.number 
+    FROM client c LEFT JOIN telephone t ON t.id_client = c.id
+    WHERE """
+    for key, value in data.items():
+        find_string += f"{key}='{value}' and "
+    find_string = find_string[:-4]
+    print (find_string)
+    # cursor.execute()
+    # for i in cursor.fetchall():
+    #     print(' '.join(i))
        
-
-#Create_table(cur)
-add_client(cur, '12300', '45600', '898@', '89523506410')
-add_telephone(cur, '12300', '45600', '891100000')
-#edit_client(cur, '123000', '45600', '1@1')
-#del_tel(cur, '12300', '45600')
-#del_client(cur, '12300', '45600')
-find_client(cur, '12300', '45600')
+if __name__ == "__main__":
+    #Create_table(cur)
+    #add_client(cur, '12300', '45600', '898@', '89523506410')
+    #add_telephone(cur, '12300', '45600', '891100000')
+    #edit_client(cur, '123000', '45600', '1@1')
+    #del_tel(cur, '12300', '45600')
+    #del_client(cur, '12300', '45600')
+    find_client(cur, first_name='Ivan', last_name='Ivanov')
 
 if conn:
     cur.close()
